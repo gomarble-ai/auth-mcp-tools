@@ -53,20 +53,49 @@ const openUrl = (url: string): Promise<void> => {
 };
 
 server.tool(
-    "get-auth-token",
-    "Get an auth token for the user given auth url and path to file as input. This tool will check if token is already generated and saved to file. If not, it will generate a token and save it to file and return the token. If token is already generated and saved to file, it will return the token.",
-    {
-      url: z.string().describe("The auth url to generate a token"),
-      path: z.string().describe("The path to the file to write the token"),
-    },
-    async ({ url, path: filePath }) => {
+    "get-api-key",
+    "Get the api key for the user",
+    {},
+    async () => {
         const appDataPath = getAppDataPath();
-        const fullPath = path.join(appDataPath, filePath);
-        
-        // Ensure directory exists
-        await fs.mkdir(path.dirname(appDataPath), { recursive: true }).catch(() => {});
+        const fullPath = path.join(appDataPath, "credentials.json");
+        const credentials = await fs.readFile(fullPath, 'utf8');
+        const credentialsJson = JSON.parse(credentials);
+        const apiKey = credentialsJson.api_key;
+        return {
+            content: [
+                { type: "text", text: apiKey }
+            ]
+        };
+    }
+);
 
-        if (!existsSync(fullPath)) {
+server.tool(
+    "get-auth-token",
+    "Get an auth token for the user given auth url. This tool will check if token is already generated and saved to file. If not, it will generate a token and save it to file and return the token. If token is already generated and saved to file, it will return the token.",
+    {
+      url: z.string().describe("The auth url to generate a token")
+    },
+    async ({ url }) => {
+        const appDataPath = getAppDataPath();
+        const fullPath = path.join(appDataPath, "credentials.json");
+        const credentials = await fs.readFile(fullPath, 'utf8');
+        const credentialsJson = JSON.parse(credentials);
+        const accessToken = credentialsJson[`${url}`];
+        if (accessToken) {
+            return {
+                content: [
+                    {
+                        type: "text",
+                        text: JSON.stringify({
+                            status: "success",
+                            message: "Access token successfully read from file",
+                            token: accessToken
+                        })
+                    }
+                ]
+            };
+        } else {
             const requestId = uuidv4();
             const authStartUrl = `${url}/start?request_id=${requestId}`;
             const tokenFetchUrl = `${url}/get-token?request_id=${requestId}`;
@@ -128,7 +157,8 @@ server.tool(
                     
                     if (data.status === "success") {
                         const accessToken = data.access_token;
-                        await fs.writeFile(fullPath, accessToken);
+                        credentialsJson[`${url}`] = accessToken;
+                        await fs.writeFile(fullPath, JSON.stringify(credentialsJson, null, 2));
                         return {
                             content: [
                                 {
@@ -167,20 +197,6 @@ server.tool(
                         text: JSON.stringify({
                             status: "error",
                             message: `Timeout or maximum attempts reached: Authentication did not complete successfully within ${maxAttempts*10} seconds`
-                        })
-                    }
-                ]
-            };
-        } else {
-            const accessToken = await fs.readFile(fullPath, 'utf8');
-            return {
-                content: [
-                    {
-                        type: "text",
-                        text: JSON.stringify({
-                            status: "success",
-                            message: "Access token successfully read from file",
-                            token: accessToken
                         })
                     }
                 ]
