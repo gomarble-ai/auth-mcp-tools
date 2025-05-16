@@ -53,18 +53,24 @@ const openUrl = (url: string): Promise<void> => {
 };
 
 server.tool(
-    "get-api-key",
-    "Get the api key for the user",
+    "get-tokens-api-keys-credentials-from-store",
+    "This tool will get the tokens, api keys, and credentials for the user from the store",
     {},
     async () => {
         const appDataPath = getAppDataPath();
         const fullPath = path.join(appDataPath, "credentials.json");
+        if (!existsSync(fullPath)) {
+            return {
+                content: [
+                    { type: "text", text: "No credentials found in store. Please use the get-auth-token tool to get a token" }
+                ]
+            };
+        }
         const credentials = await fs.readFile(fullPath, 'utf8');
         const credentialsJson = JSON.parse(credentials);
-        const apiKey = credentialsJson.api_key;
         return {
             content: [
-                { type: "text", text: apiKey }
+                { type: "text", text: JSON.stringify(credentialsJson) }
             ]
         };
     }
@@ -157,7 +163,8 @@ server.tool(
                     
                     if (data.status === "success") {
                         const accessToken = data.access_token;
-                        credentialsJson[`${url}`] = accessToken;
+                        const key = url.split("/").pop() || "";
+                        credentialsJson[`${key}_access_token`] = accessToken;
                         await fs.writeFile(fullPath, JSON.stringify(credentialsJson, null, 2));
                         return {
                             content: [
