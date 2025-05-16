@@ -87,7 +87,8 @@ server.tool(
         const fullPath = path.join(appDataPath, "credentials.json");
         const credentials = await fs.readFile(fullPath, 'utf8');
         const credentialsJson = JSON.parse(credentials);
-        const accessToken = credentialsJson[`${url}`];
+        const key = url.split("/").pop() || "";
+        const accessToken = credentialsJson[`${key}_access_token`];
         if (accessToken) {
             return {
                 content: [
