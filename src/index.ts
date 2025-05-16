@@ -80,16 +80,17 @@ server.tool(
     "get-auth-token",
     "Get an auth token for the user given auth url. This tool will check if token is already generated and saved to file. If not, it will generate a token and save it to file and return the token. If token is already generated and saved to file, it will return the token.",
     {
-      url: z.string().describe("The auth url to generate a token")
+      url: z.string().describe("The auth url to generate a token"),
+      force_generate_new_token: z.boolean().describe("If true, the tool will generate a new token even if one already exists")
     },
-    async ({ url }) => {
+    async ({ url, force_generate_new_token }) => {
         const appDataPath = getAppDataPath();
         const fullPath = path.join(appDataPath, "credentials.json");
         const credentials = await fs.readFile(fullPath, 'utf8');
         const credentialsJson = JSON.parse(credentials);
         const key = url.split("/").pop() || "";
         const accessToken = credentialsJson[`${key}_access_token`];
-        if (accessToken) {
+        if (accessToken && !force_generate_new_token) {
             return {
                 content: [
                     {
