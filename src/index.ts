@@ -173,7 +173,7 @@ server.tool(
                                     type: "text",
                                     text: JSON.stringify({
                                         status: "success",
-                                        message: "Access token successfully generated and saved to file",
+                                        message: "Access token successfully generated and saved to credentials store",
                                         token: accessToken
                                     })
                                 }
