@@ -26,7 +26,7 @@ Update your mcp config
         "auth-mcp-tools": {
             "command": "node",
             "args": [
-                "<project_dir_base_path>/node_modules/auth-mcp-tools/index.js"
+                "<project_dir_base_path>/node_modules/auth-mcp-tools/build/index.js"
             ]
         }
         ...
