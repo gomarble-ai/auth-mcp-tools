@@ -13,7 +13,7 @@ import https from 'https';
 // Create server instance
 const server = new McpServer({
   name: "auth-mcp-tools",
-  version: "1.0.4",
+  version: "1.0.6",
   capabilities: {
     resources: {},
     tools: {},
