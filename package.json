@@ -1,7 +1,7 @@
 {
   "type": "module",
   "name": "auth-mcp-tools",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "main": "index.js",
   "bin": {
     "mcp-auth": "./build/index.js"
