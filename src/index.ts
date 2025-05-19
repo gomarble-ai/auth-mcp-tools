@@ -38,7 +38,7 @@ const getAppDataPath = (): string => {
 
 // Helper function to open URLs
 const openUrl = (url: string): Promise<void> => {
-  const command = process.platform === 'win32' ? 'msedge' :
+  const command = process.platform === 'win32' ? 'explorer' :
                  process.platform === 'darwin' ? 'open' : 'xdg-open';
   
   return new Promise((resolve, reject) => {
