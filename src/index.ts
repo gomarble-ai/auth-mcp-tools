@@ -43,10 +43,6 @@ const openUrl = (url: string): Promise<void> => {
   
   return new Promise((resolve, reject) => {
     exec(`${command} "${url}"`, (error) => {
-      if (error) {
-        reject(error);
-        return;
-      }
       resolve();
     });
   });
@@ -81,11 +77,7 @@ async function generateAccessToken(url: string, key: string, credentialsJson: an
     const authStartUrl = `${url}/start?request_id=${requestId}`;
     const tokenFetchUrl = `${url}/get-token?request_id=${requestId}`;
 
-    try {
-        await openUrl(authStartUrl);
-    } catch (e: any) {
-        throw new Error(`Warning: Could not open web browser automatically; Please manually navigate to: ${authStartUrl}`);
-    }
+    await openUrl(authStartUrl);
     
     // Poll for token completion
     const maxAttempts = 6; // 1 minute (10-second intervals)
