@@ -11,17 +11,10 @@ Authentication tools for Model Context Protocol (MCP) servers. This package prov
 
 ## Installation
 
-Install as a project dependency:
+Install as a project dependency in <project_dir_base_path> Dir:
 
 ```sh
-npm install auth-mcp-tools
-```
-
-Run build
-
-```sh
-cd auth-mcp-tools
-npm run build
+npm i https://github.com/gomarble-ai/auth-mcp-tools
 ```
 
 
@@ -33,7 +26,7 @@ Update your mcp config
         "auth-mcp-tools": {
             "command": "node",
             "args": [
-                "<project_dir_base_path>/auth-mcp-tools/build/index.js"
+                "<project_dir_base_path>/node node_modules/auth-mcp-tools/index.js"
             ]
         }
         ...
